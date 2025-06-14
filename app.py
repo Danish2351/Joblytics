@@ -6,12 +6,14 @@ import plotly.express as px
 # ---------- Page Configuration ----------
 st.set_page_config(layout="wide")
 
+
 # ---------- Database Connection ----------
 def mySQL_to_df(database, role):
     user = 'root'
-    password = '1234'
-    host = 'localhost'
-    engine = create_engine(f"mysql+pymysql://{user}:{password}@{host}/{database}")
+    password = "lueQJLxezKCcgHcgCQWsPCwhnhtCPWcU"
+    host = 'maglev.proxy.rlwy.net'
+    port = 53243
+    engine = create_engine(f"mysql+pymysql://{user}:{password}@{host}:{port}/{database}")
     query = f"SELECT * FROM job_data where job_title = '{role}' "
     return pd.read_sql(query, engine)
 
@@ -33,7 +35,7 @@ with col2:
 
 # ---------- Load Data ----------
 role = selected_role
-df = mySQL_to_df("job_data", role)
+df = mySQL_to_df("railway", role)
 
 # ---------- Right-aligned Job Count ----------
 _, right_col = st.columns([6, 1])
