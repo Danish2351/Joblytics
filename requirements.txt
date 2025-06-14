@@ -3,4 +3,3 @@ sqlalchemy
 pymysql
 pandas
 plotly
-toml
