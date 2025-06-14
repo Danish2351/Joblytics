@@ -2,18 +2,21 @@ import streamlit as st
 from sqlalchemy import create_engine
 import pandas as pd
 import plotly.express as px
+import toml
+
 
 # ---------- Page Configuration ----------
 st.set_page_config(layout="wide")
 
 
 # ---------- Database Connection ----------
-def mySQL_to_df(database, role):
-    user = 'root'
-    password = "lueQJLxezKCcgHcgCQWsPCwhnhtCPWcU"
-    host = 'maglev.proxy.rlwy.net'
-    port = 53243
-    engine = create_engine(f"mysql+pymysql://{user}:{password}@{host}:{port}/{database}")
+def load_db_config(path="secrets.toml"):
+    config = toml.load(path)
+    return config['db_credentials']
+
+def mySQL_to_df(role):
+    db_config = load_db_config()
+    engine = create_engine(f"mysql+pymysql://{db_config["user"]}:{db_config["password"]}@{db_config["host"]}:{db_config["port"]}/{db_config["database"]}")
     query = f"SELECT * FROM job_data where job_title = '{role}' "
     return pd.read_sql(query, engine)
 
@@ -35,7 +38,8 @@ with col2:
 
 # ---------- Load Data ----------
 role = selected_role
-df = mySQL_to_df("railway", role)
+load_db_config()
+df = mySQL_to_df(role)
 
 # ---------- Right-aligned Job Count ----------
 _, right_col = st.columns([6, 1])
