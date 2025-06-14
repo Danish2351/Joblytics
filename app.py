@@ -10,15 +10,17 @@ st.set_page_config(layout="wide")
 
 
 # ---------- Database Connection ----------
-def load_db_config(path="secrets.toml"):
-    config = toml.load(path)
-    return config['db_credentials']
-
 def mySQL_to_df(role):
-    db_config = load_db_config()
-    engine = create_engine(f"mysql+pymysql://{db_config["user"]}:{db_config["password"]}@{db_config["host"]}:{db_config["port"]}/{db_config["database"]}")
-    query = f"SELECT * FROM job_data where job_title = '{role}' "
+    host = st.secrets["db_credentials"]["host"]
+    port = st.secrets["db_credentials"]["port"]
+    database = st.secrets["db_credentials"]["database"]
+    user = st.secrets["db_credentials"]["user"]
+    password = st.secrets["db_credentials"]["password"]
+
+    engine = create_engine(f"mysql+pymysql://{user}:{password}@{host}:{port}/{database}")
+    query = f"SELECT * FROM job_data WHERE job_title = '{role}'"
     return pd.read_sql(query, engine)
+
 
 # ---------- Role Selection Mapping ----------
 role_to_table = [
@@ -38,7 +40,6 @@ with col2:
 
 # ---------- Load Data ----------
 role = selected_role
-load_db_config()
 df = mySQL_to_df(role)
 
 # ---------- Right-aligned Job Count ----------
